@@ -18,7 +18,7 @@ type CostCenterError struct{ Message string }
 
 func (e *CostCenterError) Error() string { return e.Message }
 
-// Alert is one Cost Center alert, as printed by `muse-cost alert status --json`.
+// Alert is one Cost Center alert, as printed by `meta-cost alert status --json`.
 type Alert map[string]any
 
 func (a Alert) String(key string) string {
@@ -85,7 +85,7 @@ func splitCommand(line string) []string {
 	return words
 }
 
-// CostCenterStatuses runs `muse-cost alert status --json` and returns its alerts.
+// CostCenterStatuses runs `meta-cost alert status --json` and returns its alerts.
 func (s *Store) CostCenterStatuses(timeout time.Duration) ([]Alert, error) {
 	argv := append(splitCommand(s.Setting("cost_center_command")), "alert", "status", "--json")
 	if len(argv) == 3 {
@@ -99,7 +99,7 @@ func (s *Store) CostCenterStatuses(timeout time.Duration) ([]Alert, error) {
 	err := cmd.Run()
 	if errors.Is(err, exec.ErrNotFound) || errors.Is(err, fs.ErrNotExist) {
 		return nil, &CostCenterError{fmt.Sprintf("Cost Center command not found: %s. Set it with "+
-			"`meta-keyguard config set cost_center_command /path/to/muse-cost`.", argv[0])}
+			"`meta-keyguard config set cost_center_command /path/to/meta-cost`.", argv[0])}
 	}
 	if ctx.Err() == context.DeadlineExceeded {
 		return nil, &CostCenterError{"Cost Center did not answer within two minutes"}

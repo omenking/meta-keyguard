@@ -392,11 +392,11 @@ func TestMissingSecretIsAnError(t *testing.T) {
 	}
 }
 
-// fakeCostCenter installs a script that prints the alerts as `muse-cost alert status --json` would.
+// fakeCostCenter installs a script that prints the alerts as `meta-cost alert status --json` would.
 func (f *fixture) fakeCostCenter(alerts []map[string]any, code int) {
 	f.t.Helper()
 	data, _ := json.Marshal(alerts)
-	script := filepath.Join(f.dir, "muse-cost")
+	script := filepath.Join(f.dir, "meta-cost")
 	body := fmt.Sprintf("#!/bin/sh\ncat <<'EOF'\n%s\nEOF\nexit %d\n", data, code)
 	if err := os.WriteFile(script, []byte(body), 0o700); err != nil {
 		f.t.Fatal(err)
@@ -518,7 +518,7 @@ func TestAFailingCheckIsReportedAndBlocksCreation(t *testing.T) {
 
 func TestMissingCostCenterCommandIsReported(t *testing.T) {
 	f := setup(t)
-	f.set("cost_center_command", filepath.Join(f.dir, "nowhere", "muse-cost"))
+	f.set("cost_center_command", filepath.Join(f.dir, "nowhere", "meta-cost"))
 	_, err := f.store.CostCenterStatuses(time.Minute)
 	if err == nil || !strings.Contains(err.Error(), "not found") {
 		t.Fatalf("got %v", err)

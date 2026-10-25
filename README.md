@@ -121,7 +121,7 @@ one.
 | `rotate_before` | `10m` | How long before expiry an `--auto-rotate` key is replaced. |
 | `env_var` | `META_API_KEY` | The variable `env` and `exec` set. |
 | `cost_center` | `off` | Whether Keyguard checks Cost Center (see below). |
-| `cost_center_command` | `muse-cost` | How to run Cost Center. |
+| `cost_center_command` | `meta-cost` | How to run Cost Center. |
 | `team_id` | (empty) | Which team to manage, needed only if your account has several. |
 | `project_id` | (empty) | Which project new keys belong to, needed only if Keyguard cannot work it out. |
 
@@ -142,10 +142,10 @@ meta-keyguard cost-center check   # shows which alerts are revoking keys
 meta-keyguard cost-center off
 ```
 
-Keyguard runs `muse-cost` from your `PATH`, which is where Cost Center's installer puts it.
-If it lives somewhere else, name it with `meta-keyguard config set cost_center_command /path/to/muse-cost`.
+Keyguard runs `meta-cost` from your `PATH`, which is where Cost Center's installer puts it.
+If it lives somewhere else, name it with `meta-keyguard config set cost_center_command /path/to/meta-cost`.
 
-With the check on, the reaper runs `muse-cost alert status --json` every minute. For each
+With the check on, the reaper runs `meta-cost alert status --json` every minute. For each
 alert that has passed its limit and is set to revoke keys, it deletes every matching key, and
 `create` refuses new keys that the alert covers until the alert's period ends or you pass
 `--ignore-cost-center`. If Cost Center cannot be run, `create` also refuses to hand out new

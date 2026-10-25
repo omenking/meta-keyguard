@@ -23,13 +23,13 @@ meta-keyguard create kgtest-spark --ttl 1h
 The alert is scoped to the project `kgtest-spark` and revokes keys matching `kgtest-spark`.
 
 ```bash
-muse-cost alert set --project kgtest-spark --monthly-usd 0.01 --revoke-keys kgtest-spark
+meta-cost alert set --project kgtest-spark --monthly-usd 0.01 --revoke-keys kgtest-spark
 ```
 
 Open the Meta Cost Control Center.
 
 ```sh
-muse-cost show
+meta-cost show
 ```
 
 ## 4. Spend in that project with the key
@@ -47,7 +47,7 @@ alert with the share of its limit spent; if that is under 100%, or there is no l
 the `muse exec` command again.
 
 ```bash
-muse-cost month --project kgtest-spark | grep WARNING
+meta-cost month --project kgtest-spark | grep WARNING
 ```
 
 ## 5. Check the result (allow up to a minute)
@@ -58,7 +58,7 @@ meta-keyguard log -n 5                # cost-center-revoked ... kgtest-spark
 meta-keyguard create kgtest-spark     # refused while the alert is exceeded
 ```
 
-To see the same result in the dashboard, run `muse-cost show` and
+To see the same result in the dashboard, run `meta-cost show` and
 open **Alerts**. The alert reads "Keyguard revoked kgtest-spark at …".
 
 ## 6. Clean up

@@ -29,7 +29,7 @@ var Defaults = map[string]string{
 	"rotate_before":       "10m",
 	"env_var":             "META_API_KEY",
 	"cost_center":         "off",
-	"cost_center_command": "muse-cost",
+	"cost_center_command": "meta-cost",
 	"team_id":             "",
 	"project_id":          "",
 }
