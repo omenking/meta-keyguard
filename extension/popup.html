@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Meta Keyguard</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header><img src="icon-48.png" alt="" width="24" height="24"><h1>Meta Keyguard</h1></header>
+  <div id="error" class="banner danger" role="alert" hidden>
+    <p><strong id="error-title"></strong><span id="error-message"></span></p>
+    <button type="button" id="clear-error">Dismiss</button>
+  </div>
+  <section>
+    <dl>
+      <dt>CLI bridge</dt><dd id="bridge">…</dd>
+      <dt>dev.meta.ai</dt><dd id="meta">Not checked</dd>
+    </dl>
+    <div class="actions">
+      <button type="button" id="check">Check dev.meta.ai</button>
+      <button type="button" id="reconnect">Reconnect bridge</button>
+    </div>
+  </section>
+  <section>
+    <h2>Scheduled deletions</h2>
+    <p class="help">Keys the CLI manages. If WSL is not running when one is due, the extension deletes it itself.</p>
+    <ul id="schedule"><li class="muted">Loading…</li></ul>
+    <p id="pending" class="muted" hidden></p>
+  </section>
+  <script src="popup.js" type="module"></script>
+</body>
+</html>
