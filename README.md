@@ -219,3 +219,4 @@ new binary, since the extension is embedded in it.
 The bridge tests start a real `keyguard bridge` process and play the extension's side of
 native messaging. The adapter tests run against a pretend dev.meta.ai that enforces the
 last-key rule. Neither touches the real dashboard.
+
