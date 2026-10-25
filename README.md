@@ -137,11 +137,13 @@ dev.meta.ai name of keys Keyguard did not create.
 Keyguard only acts on those alerts when its own check is turned on:
 
 ```bash
-keyguard config set cost_center_command /path/to/meta-costcenter/muse-cost
 keyguard cost-center on      # turns the check on and runs it once
 keyguard cost-center check   # shows which alerts are revoking keys
 keyguard cost-center off
 ```
+
+Keyguard runs `muse-cost` from your `PATH`, which is where Cost Center's installer puts it.
+If it lives somewhere else, name it with `keyguard config set cost_center_command /path/to/muse-cost`.
 
 With the check on, the reaper runs `muse-cost alert status --json` every minute. For each
 alert that has passed its limit and is set to revoke keys, it deletes every matching key, and

@@ -23,14 +23,13 @@ keyguard create kgtest-spark --ttl 1h
 The alert is scoped to the project `kgtest-spark` and revokes keys matching `kgtest-spark`.
 
 ```bash
-cd ~/Sites/meta-costcenter
-./muse-cost alert set --project kgtest-spark --monthly-usd 0.01 --revoke-keys kgtest-spark
+muse-cost alert set --project kgtest-spark --monthly-usd 0.01 --revoke-keys kgtest-spark
 ```
 
 Open the Meta Cost Control Center.
 
 ```sh
-./muse-cost show
+muse-cost show
 ```
 
 ## 4. Spend in that project with the key
@@ -43,12 +42,12 @@ keyguard get kgtest-spark | muse exec --api-key-stdin --provider meta \
   --model muse-spark-1.3 --workspace /tmp/kgtest-spark --disable-approval "Say hi"
 ```
 
-A call usually costs more than a cent. If this prints `ok` instead of `exceeded`, run the
-`muse exec` command again.
+A call usually costs more than a cent. The report below prints a `WARNING` line for the
+alert with the share of its limit spent; if that is under 100%, or there is no line, run
+the `muse exec` command again.
 
 ```bash
-~/Sites/meta-costcenter/muse-cost alert status --json \
-  | python3 -c "import json,sys; print([a['level'] for a in json.load(sys.stdin) if a['project'] == 'kgtest-spark'])"
+muse-cost month --project kgtest-spark | grep WARNING
 ```
 
 ## 5. Check the result (allow up to a minute)
@@ -59,7 +58,7 @@ keyguard log -n 5                # cost-center-revoked ... kgtest-spark
 keyguard create kgtest-spark     # refused while the alert is exceeded
 ```
 
-To see the same result in the dashboard, run `~/Sites/meta-costcenter/muse-cost show` and
+To see the same result in the dashboard, run `muse-cost show` and
 open **Alerts**. The alert reads "Keyguard revoked kgtest-spark at …".
 
 ## 6. Clean up
