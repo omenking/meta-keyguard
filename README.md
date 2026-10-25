@@ -210,8 +210,9 @@ go test ./...                           # CLI, store, reaper, and an end-to-end 
 node --test extension/tests/            # the dev.meta.ai adapter
 ```
 
-Releases are built by GoReleaser from `.goreleaser.yaml` (`goreleaser release` on a tag),
-which publishes the `keyguard_linux_amd64.tar.gz` and `keyguard_linux_arm64.tar.gz`
+Pushing a tag such as `v0.1.0` runs `.github/workflows/release.yml`, which builds the release
+with GoReleaser from `.goreleaser.yaml` and publishes the
+`keyguard_linux_amd64.tar.gz` and `keyguard_linux_arm64.tar.gz`
 archives that `install.sh` downloads. Changes to `extension/` reach users only through a
 new binary, since the extension is embedded in it.
 
