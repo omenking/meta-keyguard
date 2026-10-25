@@ -230,7 +230,7 @@ lag behind real usage.
 | Bridge log | `~/.local/share/meta-keyguard/bridge.log` |
 
 These paths follow `$XDG_DATA_HOME`. Settings live in the database and are changed with
-`keyguard config set`, because Python's standard library can read TOML but not write it. The
+`keyguard config set` rather than a configuration file. The
 store holds each key's label, Meta key ID, name, creation time, expiry, state (`active`,
 `retiring`, `revoked`, or `sentinel`; *overdue* is derived from the expiry), and the secret
 in plain text (decision 6). Secrets are deleted from the store as soon as the key is
@@ -243,8 +243,12 @@ and keeps secrets only in memory for the time it takes to pass them across the b
 
 ### Technology choices
 
-The CLI is written in Python 3.11 using only the standard library, matching Cost Center so
-that both tools install the same way and can share conventions. The extension is a
+The CLI was first written in Python 3.11 (kept on the `python` branch) and then ported to Go,
+so that it installs as one static binary with a one-line command. The binary embeds the
+extension with `go:embed`, uses the pure-Go `modernc.org/sqlite` driver so it needs no C
+toolchain, and keeps the Python version's database schema and both wire protocols, so an
+existing store and installed extension carry over unchanged. Releases are built with
+GoReleaser and installed by `install.sh`. The extension is a
 Manifest V3 extension in plain JavaScript without a build step, unless the Phase 0
 investigation shows that a bundler is needed.
 

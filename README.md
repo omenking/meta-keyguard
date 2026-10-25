@@ -40,39 +40,49 @@ You refer to them by label.
 ## Requirements
 
 - WSL 2 with Windows interop enabled (the default)
-- Python 3.11 or newer inside WSL
 - Google Chrome 116 or newer on Windows, signed in to https://dev.meta.ai/
 
-## Setup
+## Install
 
-From a checkout of this repository in WSL:
+Keyguard is a single static binary with the extension built into it. In WSL, install the
+latest release into `~/.local/bin`:
 
 ```bash
-./keyguard install-bridge
+curl -fsSL https://raw.githubusercontent.com/omenking/meta-keyguard/main/install.sh | sh
 ```
 
-This copies the extension to `%LOCALAPPDATA%\MetaKeyguard\extension`, writes the native
+If Go is installed, `go install github.com/omenking/meta-keyguard/cmd/keyguard@latest`
+builds the same binary into `~/go/bin` instead. Either way, register the bridge with Chrome:
+
+```bash
+keyguard install-bridge
+```
+
+`install-bridge` copies the extension to `%LOCALAPPDATA%\MetaKeyguard\extension`, writes the native
 messaging host manifest and a small launcher batch file next to it, and registers the host
 under `HKCU\Software\Google\Chrome\NativeMessagingHosts`. Then, in Chrome:
 
 1. Open `chrome://extensions` and turn on **Developer mode**.
 2. Click **Load unpacked** and choose the folder that `install-bridge` printed.
-3. Run `./keyguard doctor` in WSL.
+3. Run `keyguard doctor` in WSL.
 
 The extension has a fixed ID (`admjfgnffhpgjnnbnkogihlnpeeeenio`) so that the host manifest
-can allow it in advance. After updating this checkout, run `install-bridge` again and click
-the extension's reload button; `doctor` tells you when the installed copy is out of date.
-`./keyguard uninstall-bridge` removes the registry entry and the installed files.
+can allow it in advance. The launcher Chrome runs points at the binary's own path, and
+`install-bridge` also records your `PATH` for the bridge, because Chrome starts it with an
+almost empty one and it needs to find Cost Center. After upgrading keyguard, or moving the
+binary, run `install-bridge` again and click the extension's reload button; `doctor` tells
+you when the installed extension, the launcher, or the running bridge is out of date.
+`keyguard uninstall-bridge` removes the registry entry and the installed files.
 
 ## Using keys
 
 ```bash
-./keyguard create dev                    # a key that lives for 12 hours
-./keyguard create ci --ttl 2h            # a shorter one
-./keyguard create agent --auto-rotate    # replaced automatically 10 minutes before it expires
-./keyguard exec dev -- python app.py     # run a program with META_API_KEY set
-eval "$(./keyguard env dev)"             # export META_API_KEY into this shell
-./keyguard get dev                       # print the secret
+keyguard create dev                    # a key that lives for 12 hours
+keyguard create ci --ttl 2h            # a shorter one
+keyguard create agent --auto-rotate    # replaced automatically 10 minutes before it expires
+keyguard exec dev -- python app.py     # run a program with META_API_KEY set
+eval "$(keyguard env dev)"             # export META_API_KEY into this shell
+keyguard get dev                       # print the secret
 ```
 
 `exec` is the recommended way to use a key, because the secret then exists only in the
@@ -100,7 +110,7 @@ not been deleted yet.
 
 ## Settings
 
-`./keyguard config` shows the settings, and `./keyguard config set <name> <value>` changes
+`keyguard config` shows the settings, and `keyguard config set <name> <value>` changes
 one.
 
 | Setting | Default | Meaning |
@@ -113,6 +123,7 @@ one.
 | `cost_center` | `off` | Whether Keyguard checks Cost Center (see below). |
 | `cost_center_command` | `muse-cost` | How to run Cost Center. |
 | `team_id` | (empty) | Which team to manage, needed only if your account has several. |
+| `project_id` | (empty) | Which project new keys belong to, needed only if Keyguard cannot work it out. |
 
 Durations are written as `90s`, `30m`, `12h`, `1d`, or combinations such as `1d12h`.
 
@@ -126,10 +137,10 @@ dev.meta.ai name of keys Keyguard did not create.
 Keyguard only acts on those alerts when its own check is turned on:
 
 ```bash
-./keyguard config set cost_center_command /path/to/meta-costcenter/muse-cost
-./keyguard cost-center on      # turns the check on and runs it once
-./keyguard cost-center check   # shows which alerts are revoking keys
-./keyguard cost-center off
+keyguard config set cost_center_command /path/to/meta-costcenter/muse-cost
+keyguard cost-center on      # turns the check on and runs it once
+keyguard cost-center check   # shows which alerts are revoking keys
+keyguard cost-center off
 ```
 
 With the check on, the reaper runs `muse-cost alert status --json` every minute. For each
@@ -140,10 +151,10 @@ keys, because it cannot tell whether a limit has been passed.
 
 Cost Center's **Alerts** page shows Keyguard's side of this: whether each alert is enforced,
 which keys its match covers, and what Keyguard revoked for it. It reads that from
-`./keyguard status --json`, which holds no secrets, so set `keyguard_command` in Cost
+`keyguard status --json`, which holds no secrets, so set `keyguard_command` in Cost
 Center's configuration if `keyguard` is not on your `PATH`. The list of keys Keyguard did
 not create is a snapshot that the reaper refreshes every ten minutes while the check is on,
-and that `./keyguard list --all` refreshes at once.
+and that `keyguard list --all` refreshes at once.
 
 Cost Center only sees Muse usage recorded on this machine, so this protects against local
 overspending, not against usage from elsewhere. The limit is checked at most once a minute
@@ -192,9 +203,15 @@ removed from the store as soon as a key is revoked.
 ## Development
 
 ```bash
-python3 -m unittest discover -s tests   # CLI, store, reaper, and an end-to-end bridge test
+go build -o keyguard ./cmd/keyguard     # embeds extension/ into the binary
+go test ./...                           # CLI, store, reaper, and an end-to-end bridge test
 node --test extension/tests/            # the dev.meta.ai adapter
 ```
+
+Releases are built by GoReleaser from `.goreleaser.yaml` (`goreleaser release` on a tag),
+which publishes the `keyguard_linux_amd64.tar.gz` and `keyguard_linux_arm64.tar.gz`
+archives that `install.sh` downloads. Changes to `extension/` reach users only through a
+new binary, since the extension is embedded in it.
 
 The bridge tests start a real `keyguard bridge` process and play the extension's side of
 native messaging. The adapter tests run against a pretend dev.meta.ai that enforces the
