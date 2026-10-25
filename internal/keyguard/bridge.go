@@ -307,7 +307,7 @@ func (b *Bridge) Run() error {
 	return nil
 }
 
-// RunBridge is `keyguard bridge`. Anything printed to stdout would corrupt the native messaging
+// RunBridge is `meta-keyguard bridge`. Anything printed to stdout would corrupt the native messaging
 // stream, so diagnostics go to a log file in the data directory (Chrome discards the host's stderr).
 func RunBridge() error {
 	if _, err := EnsureDataDir(); err != nil {

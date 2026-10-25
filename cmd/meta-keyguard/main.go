@@ -1,4 +1,4 @@
-// Command keyguard manages short-lived Meta Model API keys through a Chrome extension.
+// Command meta-keyguard manages short-lived Meta Model API keys through a Chrome extension.
 package main
 
 import (

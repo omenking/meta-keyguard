@@ -98,17 +98,17 @@ func (e *usageError) Error() string { return e.message }
 
 func usage() string {
 	var b strings.Builder
-	b.WriteString("usage: keyguard <command> [options]\n\nShort-lived, centrally stored Meta Model API keys.\n\ncommands:\n")
+	b.WriteString("usage: meta-keyguard <command> [options]\n\nShort-lived, centrally stored Meta Model API keys.\n\ncommands:\n")
 	for _, c := range commands {
 		fmt.Fprintf(&b, "  %-18s %s\n", c.name, c.help)
 	}
-	b.WriteString("\nRun `keyguard <command> --help` for a command's options.\n")
+	b.WriteString("\nRun `meta-keyguard <command> --help` for a command's options.\n")
 	return b.String()
 }
 
 func commandUsage(c commandSpec) string {
 	var b strings.Builder
-	fmt.Fprintf(&b, "usage: keyguard %s", c.name)
+	fmt.Fprintf(&b, "usage: meta-keyguard %s", c.name)
 	if len(c.flags) > 0 {
 		b.WriteString(" [options]")
 	}
@@ -141,7 +141,7 @@ func parseArgs(args []string) (parsed, *commandSpec, error) {
 		}
 	}
 	if spec == nil {
-		return parsed{}, nil, &usageError{message: fmt.Sprintf("keyguard: unknown command %q\n\n%s", args[0], usage())}
+		return parsed{}, nil, &usageError{message: fmt.Sprintf("meta-keyguard: unknown command %q\n\n%s", args[0], usage())}
 	}
 	p := parsed{command: spec.name, flags: map[string][]string{}}
 	for i := 1; i < len(args); i++ {
@@ -169,18 +169,18 @@ func parseArgs(args []string) (parsed, *commandSpec, error) {
 			}
 		}
 		if flag == nil {
-			return p, spec, &usageError{message: fmt.Sprintf("keyguard %s: unknown option %s\n\n%s", spec.name, name, commandUsage(*spec))}
+			return p, spec, &usageError{message: fmt.Sprintf("meta-keyguard %s: unknown option %s\n\n%s", spec.name, name, commandUsage(*spec))}
 		}
 		if flag.value == "" {
 			if hasInline {
-				return p, spec, &usageError{message: fmt.Sprintf("keyguard %s: %s does not take a value", spec.name, name)}
+				return p, spec, &usageError{message: fmt.Sprintf("meta-keyguard %s: %s does not take a value", spec.name, name)}
 			}
 			p.flags[name] = append(p.flags[name], "")
 			continue
 		}
 		if !hasInline {
 			if i+1 >= len(args) {
-				return p, spec, &usageError{message: fmt.Sprintf("keyguard %s: %s needs a value", spec.name, name)}
+				return p, spec, &usageError{message: fmt.Sprintf("meta-keyguard %s: %s needs a value", spec.name, name)}
 			}
 			i++
 			inline = args[i]
@@ -188,7 +188,7 @@ func parseArgs(args []string) (parsed, *commandSpec, error) {
 		p.flags[name] = append(p.flags[name], inline)
 	}
 	if len(p.positionals) < spec.required || len(p.positionals) > spec.maximum {
-		return p, spec, &usageError{message: fmt.Sprintf("keyguard %s: expected %s\n\n%s", spec.name, orNothing(spec.args), commandUsage(*spec))}
+		return p, spec, &usageError{message: fmt.Sprintf("meta-keyguard %s: expected %s\n\n%s", spec.name, orNothing(spec.args), commandUsage(*spec))}
 	}
 	return p, spec, nil
 }
@@ -203,7 +203,7 @@ func orNothing(args string) string {
 // Main runs the CLI and returns its exit status.
 func Main(args []string, extension fs.FS) int {
 	if len(args) == 1 && (args[0] == "--version" || args[0] == "version") {
-		fmt.Println("keyguard " + Version)
+		fmt.Println("meta-keyguard " + Version)
 		return 0
 	}
 	if len(args) == 1 && (args[0] == "-h" || args[0] == "--help" || args[0] == "help") {
@@ -228,7 +228,7 @@ func Main(args []string, extension fs.FS) int {
 	}
 	store, err := OpenStore()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "keyguard: %v\n", err)
+		fmt.Fprintf(os.Stderr, "meta-keyguard: %v\n", err)
 		return 1
 	}
 	defer store.Close()
@@ -236,14 +236,14 @@ func Main(args []string, extension fs.FS) int {
 	if err != nil {
 		var extErr *ExtensionError
 		if errors.As(err, &extErr) {
-			fmt.Fprintf(os.Stderr, "keyguard: %s: %s\n", extErr.Code, extErr.Error())
+			fmt.Fprintf(os.Stderr, "meta-keyguard: %s: %s\n", extErr.Code, extErr.Error())
 			if extErr.Detail != nil {
 				detail, _ := json.MarshalIndent(extErr.Detail, "", "  ")
 				fmt.Fprintln(os.Stderr, string(detail))
 			}
 			return 2
 		}
-		fmt.Fprintf(os.Stderr, "keyguard: %v\n", err)
+		fmt.Fprintf(os.Stderr, "meta-keyguard: %v\n", err)
 		return 1
 	}
 	return code
@@ -314,11 +314,11 @@ func usable(store *Store, label string) (*Key, error) {
 		return nil, err
 	}
 	if k == nil {
-		return nil, userErrorf("No active key labelled %s; create one with `keyguard create %s`", label, label)
+		return nil, userErrorf("No active key labelled %s; create one with `meta-keyguard create %s`", label, label)
 	}
 	if k.Overdue() {
 		return nil, userErrorf("The key labelled %s has expired and is waiting to be deleted; "+
-			"create a new one with `keyguard rotate %s` or `keyguard create`", label, label)
+			"create a new one with `meta-keyguard rotate %s` or `meta-keyguard create`", label, label)
 	}
 	return k, nil
 }
@@ -367,7 +367,7 @@ func status(store *Store, out io.Writer) (int, error) {
 	}
 	if len(overdue) > 0 {
 		fmt.Fprintf(out, "!! %d key(s) are past their expiry but still exist on dev.meta.ai: %s. "+
-			"Run `keyguard reap` or `keyguard doctor`.\n", len(overdue), strings.Join(overdue, ", "))
+			"Run `meta-keyguard reap` or `meta-keyguard doctor`.\n", len(overdue), strings.Join(overdue, ", "))
 	}
 	if len(keys) > 0 {
 		fmt.Fprintln(out, table(keyRows(keys, moment), keyHeaders))
@@ -463,7 +463,7 @@ func doctor(store *Store, ext Extension, extension fs.FS, inspect bool, out io.W
 			fmt.Fprintln(out, "FAIL "+text)
 		}
 	}
-	report(true, fmt.Sprintf("keyguard %s (%s)", Version, runtime.Version()))
+	report(true, fmt.Sprintf("meta-keyguard %s (%s)", Version, runtime.Version()))
 	distro := os.Getenv("WSL_DISTRO_NAME")
 	if distro == "" {
 		distro = "not detected"
@@ -475,18 +475,18 @@ func doctor(store *Store, ext Extension, extension fs.FS, inspect bool, out io.W
 	if err != nil {
 		report(false, fmt.Sprintf("Could not inspect the Windows install: %v", err))
 	} else if !found.Registered {
-		report(false, "Native messaging host not registered; run `keyguard install-bridge`")
+		report(false, "Native messaging host not registered; run `meta-keyguard install-bridge`")
 	} else {
 		report(true, "Native messaging host registered")
 		if found.ExtensionCurrent != nil && *found.ExtensionCurrent {
-			report(true, "Installed extension matches this keyguard binary")
+			report(true, "Installed extension matches this meta-keyguard binary")
 		} else {
-			report(false, "Installed extension is out of date; run `keyguard install-bridge` and reload the extension in chrome://extensions")
+			report(false, "Installed extension is out of date; run `meta-keyguard install-bridge` and reload the extension in chrome://extensions")
 		}
 		if found.HostCommandCurrent != nil && *found.HostCommandCurrent {
-			report(true, "Host launcher points at this keyguard binary")
+			report(true, "Host launcher points at this meta-keyguard binary")
 		} else {
-			report(false, "Host launcher is stale; run `keyguard install-bridge`")
+			report(false, "Host launcher is stale; run `meta-keyguard install-bridge`")
 		}
 	}
 	ops := &Ops{Store: store, Ext: ext}
@@ -512,7 +512,7 @@ func doctor(store *Store, ext Extension, extension fs.FS, inspect bool, out io.W
 			report(true, fmt.Sprintf("Cost Center answered (%d alert(s), %d revoking keys)", len(alerts), revoking))
 		}
 	} else {
-		fmt.Fprintln(out, "     Cost Center check is off (`keyguard cost-center on` to enable)")
+		fmt.Fprintln(out, "     Cost Center check is off (`meta-keyguard cost-center on` to enable)")
 	}
 	if ok {
 		return 0
@@ -624,7 +624,7 @@ func durationFlag(p parsed, name string) (int64, error) {
 	}
 	seconds, err := ParseDuration(p.value(name))
 	if err != nil {
-		return 0, &usageError{message: fmt.Sprintf("keyguard %s: %s: %v", p.command, name, err)}
+		return 0, &usageError{message: fmt.Sprintf("meta-keyguard %s: %s: %v", p.command, name, err)}
 	}
 	return seconds, nil
 }
@@ -642,7 +642,7 @@ func run(store *Store, ext Extension, p parsed, extension fs.FS, out io.Writer) 
 			"If the extension is not loaded yet:\n"+
 			"  1. Open chrome://extensions and turn on Developer mode.\n"+
 			"  2. Click \"Load unpacked\" and choose %s\n"+
-			"If it is already loaded, click its reload button. Then run `keyguard doctor`.\n", where.Directory, where.Extension)
+			"If it is already loaded, click its reload button. Then run `meta-keyguard doctor`.\n", where.Directory, where.Extension)
 		return 0, nil
 	case "uninstall-bridge":
 		where, err := Uninstall()
@@ -768,7 +768,7 @@ func run(store *Store, ext Extension, p parsed, extension fs.FS, out io.Writer) 
 		return 0, nil
 	case "extend":
 		if !p.has("--ttl") {
-			return 1, &usageError{message: "keyguard extend: --ttl is required"}
+			return 1, &usageError{message: "meta-keyguard extend: --ttl is required"}
 		}
 		ttl, err := durationFlag(p, "--ttl")
 		if err != nil {
@@ -824,7 +824,7 @@ func locked(ops *Ops, p parsed, out io.Writer) (int, error) {
 		if err != nil {
 			return 1, err
 		}
-		fmt.Fprintf(out, "Created %s; it expires in %s.\nUse it with: keyguard exec %s -- <command>\n",
+		fmt.Fprintf(out, "Created %s; it expires in %s.\nUse it with: meta-keyguard exec %s -- <command>\n",
 			k.MetaName, remaining(*k, now()), label)
 	case "rotate":
 		grace := int64(-1)
@@ -900,7 +900,7 @@ func locked(ops *Ops, p parsed, out io.Writer) (int, error) {
 func execWithKey(store *Store, k *Key, p parsed) error {
 	argv := p.rest
 	if len(argv) == 0 {
-		return userErrorf("Give a command after --, for example: keyguard exec dev -- python app.py")
+		return userErrorf("Give a command after --, for example: meta-keyguard exec dev -- python app.py")
 	}
 	names := p.flags["--var"]
 	if len(names) == 0 {

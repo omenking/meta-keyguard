@@ -1,8 +1,8 @@
 version: 2
 
 builds:
-  - main: ./cmd/keyguard
-    binary: keyguard
+  - main: ./cmd/meta-keyguard
+    binary: meta-keyguard
     env:
       - CGO_ENABLED=0
     goos: [linux]
@@ -13,7 +13,7 @@ builds:
 
 archives:
   - formats: [tar.gz]
-    name_template: "keyguard_{{ .Os }}_{{ .Arch }}"
+    name_template: "meta-keyguard_{{ .Os }}_{{ .Arch }}"
     files: [README.md, LICENSE]
 
 checksum:

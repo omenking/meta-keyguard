@@ -155,7 +155,7 @@ func (o *Ops) cappedTTL(ttl int64) (int64, error) {
 		return 0, err
 	}
 	if ttl > maximum {
-		return 0, userErrorf("TTL is longer than the maximum of %s; raise it with `keyguard config set max_ttl` "+
+		return 0, userErrorf("TTL is longer than the maximum of %s; raise it with `meta-keyguard config set max_ttl` "+
 			"if you really need to", o.Store.Setting("max_ttl"))
 	}
 	return ttl, nil
@@ -187,7 +187,7 @@ func (o *Ops) Create(label string, ttl int64, autoRotate, ignoreCostCenter bool)
 	if existing, err := o.Store.ActiveKey(label); err != nil {
 		return nil, err
 	} else if existing != nil {
-		return nil, userErrorf("%s already has an active key; use `keyguard rotate %s` to replace it", label, label)
+		return nil, userErrorf("%s already has an active key; use `meta-keyguard rotate %s` to replace it", label, label)
 	}
 	if ttl == 0 {
 		var err error

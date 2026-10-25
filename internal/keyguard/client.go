@@ -13,7 +13,7 @@ import (
 // are never silent: every one reaches the CLI as an *ExtensionError carrying one of these codes.
 var Hints = map[string]string{
 	"bridge_offline": "Chrome is not running, or the Meta Keyguard extension is not connected. Open Chrome, " +
-		"check the extension is enabled, and run `keyguard doctor`.",
+		"check the extension is enabled, and run `meta-keyguard doctor`.",
 	"timeout":       "The extension did not answer in time. Check that Chrome is responsive and that dev.meta.ai loads.",
 	"not_logged_in": "Sign in at https://dev.meta.ai/ in Chrome, then try again.",
 	"reauth_required": "dev.meta.ai wants you to confirm your identity. Open https://dev.meta.ai/api-keys in Chrome, " +
@@ -21,14 +21,14 @@ var Hints = map[string]string{
 	"forbidden":      "dev.meta.ai refused the request for this account.",
 	"create_blocked": "dev.meta.ai will not create keys for this account (for example, no payment method).",
 	"endpoint_changed": "dev.meta.ai answered in a way Keyguard does not recognise; its internal API may have " +
-		"changed. Run `keyguard doctor --inspect` and update extension/adapter.js.",
+		"changed. Run `meta-keyguard doctor --inspect` and update extension/adapter.js.",
 	"secret_not_found": "A key was created but Keyguard could not find its secret in the response, so it deleted " +
-		"that key again. The internal API has probably changed; see `keyguard doctor --inspect`.",
-	"multiple_teams": "Your account has several teams. Choose one with `keyguard config set team_id <id>`.",
-	"multiple_projects": "This team has several projects. Choose one with `keyguard config set project_id <id>` " +
+		"that key again. The internal API has probably changed; see `meta-keyguard doctor --inspect`.",
+	"multiple_teams": "Your account has several teams. Choose one with `meta-keyguard config set team_id <id>`.",
+	"multiple_projects": "This team has several projects. Choose one with `meta-keyguard config set project_id <id>` " +
 		"(the details below list them).",
 	"project_unknown": "Keyguard could not find which project to create keys in. Open https://dev.meta.ai/api-keys " +
-		"in Chrome and pick the project, or set it with `keyguard config set project_id <id>`; " +
+		"in Chrome and pick the project, or set it with `meta-keyguard config set project_id <id>`; " +
 		"the project ID appears as ?project_id= in the dashboard URL.",
 	"rate_limited":     "dev.meta.ai is rate limiting requests. Wait a minute and try again.",
 	"meta_unavailable": "dev.meta.ai returned a server error. Try again later.",
@@ -89,7 +89,7 @@ func replyResult(reply map[string]any) (map[string]any, error) {
 	return nil, &ExtensionError{Code: code, Message: message, Detail: failure["detail"]}
 }
 
-// BridgeClient sends one request per connection to the running `keyguard bridge`.
+// BridgeClient sends one request per connection to the running `meta-keyguard bridge`.
 type BridgeClient struct{ Path string }
 
 func (c BridgeClient) Call(op string, params Params, timeout time.Duration) (map[string]any, error) {

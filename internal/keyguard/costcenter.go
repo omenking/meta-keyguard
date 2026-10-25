@@ -99,7 +99,7 @@ func (s *Store) CostCenterStatuses(timeout time.Duration) ([]Alert, error) {
 	err := cmd.Run()
 	if errors.Is(err, exec.ErrNotFound) || errors.Is(err, fs.ErrNotExist) {
 		return nil, &CostCenterError{fmt.Sprintf("Cost Center command not found: %s. Set it with "+
-			"`keyguard config set cost_center_command /path/to/muse-cost`.", argv[0])}
+			"`meta-keyguard config set cost_center_command /path/to/muse-cost`.", argv[0])}
 	}
 	if ctx.Err() == context.DeadlineExceeded {
 		return nil, &CostCenterError{"Cost Center did not answer within two minutes"}

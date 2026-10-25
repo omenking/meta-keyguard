@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-// The test binary doubles as `keyguard` when run with KEYGUARD_TEST_MAIN set, so the bridge and the
+// The test binary doubles as `meta-keyguard` when run with KEYGUARD_TEST_MAIN set, so the bridge and the
 // CLI can be tested as real processes talking over pipes and the Unix socket.
 func TestMain(m *testing.M) {
 	if os.Getenv("KEYGUARD_TEST_MAIN") == "1" {
@@ -27,7 +27,7 @@ func keyguardCommand(args ...string) *exec.Cmd {
 	return cmd
 }
 
-// fakeChrome plays the extension's side of native messaging against a real `keyguard bridge` process.
+// fakeChrome plays the extension's side of native messaging against a real `meta-keyguard bridge` process.
 type fakeChrome struct {
 	t        *testing.T
 	meta     *fakeMeta
@@ -150,7 +150,7 @@ func mustCLI(t *testing.T, args ...string) string {
 	t.Helper()
 	result := cli(t, args...)
 	if result.code != 0 {
-		t.Fatalf("keyguard %s failed (%d): %s", strings.Join(args, " "), result.code, result.stderr)
+		t.Fatalf("meta-keyguard %s failed (%d): %s", strings.Join(args, " "), result.code, result.stderr)
 	}
 	return result.stdout
 }
@@ -259,5 +259,5 @@ func TestHelpAndUsageErrors(t *testing.T) {
 	contains(t, cli(t, "--version").stdout, Version)
 	bad := cli(t, "create")
 	equal(t, bad.code, 2)
-	contains(t, bad.stderr, "usage: keyguard create")
+	contains(t, bad.stderr, "usage: meta-keyguard create")
 }

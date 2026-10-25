@@ -118,7 +118,7 @@ func ExtensionDigest(fsys fs.FS) (string, error) {
 	return hex.EncodeToString(digest.Sum(nil)), nil
 }
 
-// Executable is the path of the running keyguard binary, which the launcher starts as the bridge.
+// Executable is the path of the running meta-keyguard binary, which the launcher starts as the bridge.
 func Executable() (string, error) {
 	exe, err := os.Executable()
 	if err != nil {
