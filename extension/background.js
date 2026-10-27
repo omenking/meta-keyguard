@@ -2,6 +2,21 @@
 // and deletes expired keys on its own when the CLI cannot (for example, while WSL is stopped).
 import { AdapterError, SENTINEL_NAME, chooseProject, createKey, deleteKeySafely, makeApi, shapeOf } from './adapter.js';
 
+// WARNING: THIS EXTENSION IS DELIBERATELY BROKEN. DO NOT USE IT, AND DO NOT USE THE BRIDGE.
+//
+// Driving dev.meta.ai's internal API from this extension got the author's Meta account blocked.
+// The bridge's reaper asks the extension to list keys every minute (and the Cost Center check adds
+// more requests), and dev.meta.ai answered with HTTP 429 Too Many Requests until the account's
+// dashboard stopped working altogether. Automated use of the dashboard is not something Meta
+// supports, and the same thing is likely to happen to anyone who runs this.
+//
+// The throw below stops the service worker before it registers any listener or alarm, so the
+// extension never connects to the bridge and never sends a request to dev.meta.ai. Chrome reports
+// it in chrome://extensions as "Service worker registration failed"; that is intentional. Do not
+// remove this line to get the extension working again. Create and delete keys by hand on
+// dev.meta.ai instead.
+throw new Error('Meta Keyguard is disabled: automated use of dev.meta.ai got an account rate-limited (HTTP 429) and blocked. Do not use this extension or the bridge.');
+
 const HOST = 'com.metakeyguard.bridge';
 const VERSION = chrome.runtime.getManifest().version;
 const ORIGIN = 'https://dev.meta.ai';

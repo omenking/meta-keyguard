@@ -2,6 +2,22 @@
 
 A chrome extension and CLI tool to manage your Meta API keys.
 
+> [!CAUTION]
+> **Do not use the Chrome extension or the bridge. The extension is deliberately disabled.**
+>
+> The extension drives dev.meta.ai's internal dashboard API, and the bridge asks it to list
+> keys every minute, with Cost Center checks adding more requests. dev.meta.ai answered this
+> traffic with HTTP 429 (Too Many Requests), and the author's Meta account was then blocked
+> from the dashboard. Meta does not support automated use of the dashboard, so the same thing
+> is likely to happen to anyone who runs Keyguard. The extension's service worker now throws
+> on startup, before it registers any listener or alarm, so it never sends a request to
+> dev.meta.ai; see the warning at the top of `extension/background.js`. Do not remove that
+> line to get it working again. Create and delete keys by hand on dev.meta.ai instead.
+>
+> If you already installed Keyguard, remove the extension in `chrome://extensions` and run
+> `meta-keyguard uninstall-bridge`. The rest of this README describes how Keyguard worked
+> and is kept for reference only.
+
 ![](./banner.png)
 
 Meta Keyguard gives Meta Model API keys an expiry date. The Meta developer dashboard has no
@@ -92,6 +108,10 @@ program's configuration, since that copy outlives the key's TTL.
 
 `get`, `env`, and `exec` refuse to hand out a key that has passed its expiry, even if it has
 not been deleted yet.
+
+Alongside the secret, `env` and `exec` also set `META_KEYGUARD_KEY` to the key's label. The
+label is not a secret. Meta Cost Center's Muse hook records it, so that a session started
+with `meta-keyguard exec dev -- muse` is counted as pay-as-you-go usage of the key `dev`.
 
 ## Managing keys
 

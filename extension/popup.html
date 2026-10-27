@@ -7,11 +7,18 @@
 </head>
 <body>
   <header><img src="icon-48.png" alt="" width="24" height="24"><h1>Meta Keyguard</h1></header>
+  <!-- The extension is deliberately disabled; see the warning at the top of background.js. -->
+  <div class="banner danger" role="alert">
+    <p><strong>Disabled. Do not use this extension or the bridge.</strong>
+    Automated requests to dev.meta.ai were answered with HTTP 429 (Too Many Requests) and got the
+    author's Meta account blocked from the dashboard. The extension now does nothing. Remove it from
+    chrome://extensions and manage keys by hand on dev.meta.ai.</p>
+  </div>
   <div id="error" class="banner danger" role="alert" hidden>
     <p><strong id="error-title"></strong><span id="error-message"></span></p>
     <button type="button" id="clear-error">Dismiss</button>
   </div>
-  <section>
+  <section hidden>
     <dl>
       <dt>CLI bridge</dt><dd id="bridge">…</dd>
       <dt>dev.meta.ai</dt><dd id="meta">Not checked</dd>
@@ -21,7 +28,7 @@
       <button type="button" id="reconnect">Reconnect bridge</button>
     </div>
   </section>
-  <section>
+  <section hidden>
     <h2>Scheduled deletions</h2>
     <p class="help">Keys the CLI manages. If WSL is not running when one is due, the extension deletes it itself.</p>
     <ul id="schedule"><li class="muted">Loading…</li></ul>

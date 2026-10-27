@@ -1,3 +1,7 @@
+// The extension is deliberately disabled (see the warning at the top of background.js), so the
+// popup only shows its warning and never talks to the service worker, which no longer runs.
+throw new Error('Meta Keyguard is disabled; see background.js.');
+
 const $ = id => document.getElementById(id);
 
 function remaining(when) {

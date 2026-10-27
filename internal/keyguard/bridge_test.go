@@ -172,7 +172,10 @@ func TestCLIRoundTripThroughTheBridge(t *testing.T) {
 	}
 	t.Setenv("META_API_KEY", "stale")
 	equal(t, strings.TrimSpace(mustCLI(t, "exec", "dev", "--", "sh", "-c", "echo $META_API_KEY")), secret)
+	t.Setenv("META_KEYGUARD_KEY", "stale")
+	equal(t, strings.TrimSpace(mustCLI(t, "exec", "dev", "--", "sh", "-c", "echo $META_KEYGUARD_KEY")), "dev")
 	contains(t, mustCLI(t, "env", "dev", "--var", "MUSE_API_KEY"), "export MUSE_API_KEY="+secret)
+	contains(t, mustCLI(t, "env", "dev"), "export META_KEYGUARD_KEY=dev")
 	listing := mustCLI(t, "list", "--all")
 	contains(t, listing, "hand-made")
 	contains(t, listing, "1h 59m")

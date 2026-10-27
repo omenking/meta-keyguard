@@ -35,4 +35,5 @@ case ":$PATH:" in
   *":$dir:"*) ;;
   *) echo "Add $dir to your PATH, for example: echo 'export PATH=\"$dir:\$PATH\"' >> ~/.bashrc" ;;
 esac
-echo "Next: run 'meta-keyguard install-bridge', then load the extension it prints in chrome://extensions."
+echo "WARNING: do not run 'meta-keyguard install-bridge'. The Chrome extension is deliberately disabled because"
+echo "automated use of dev.meta.ai got an account rate-limited (HTTP 429) and blocked. See the README."

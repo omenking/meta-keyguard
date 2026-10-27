@@ -724,6 +724,7 @@ func run(store *Store, ext Extension, p parsed, extension fs.FS, out io.Writer) 
 				name = store.Setting("env_var")
 			}
 			fmt.Fprintf(out, "export %s=%s\n", name, shellQuote(k.Secret))
+			fmt.Fprintf(out, "export %s=%s\n", keyLabelVar, shellQuote(k.Label))
 		case "exec":
 			return 1, execWithKey(store, k, p)
 		}
@@ -896,6 +897,10 @@ func locked(ops *Ops, p parsed, out io.Writer) (int, error) {
 	return 0, ops.PushSchedule()
 }
 
+// keyLabelVar names the key in the environment beside its secret. It is not a secret: Meta Cost
+// Center's Muse hook records it so that spend can be attributed to the key that paid for it.
+const keyLabelVar = "META_KEYGUARD_KEY"
+
 // execWithKey replaces this process with the command, the key in its environment. It returns only on failure.
 func execWithKey(store *Store, k *Key, p parsed) error {
 	argv := p.rest
@@ -910,7 +915,7 @@ func execWithKey(store *Store, k *Key, p parsed) error {
 	if err != nil {
 		return err
 	}
-	replaced := map[string]bool{}
+	replaced := map[string]bool{keyLabelVar: true}
 	for _, name := range names {
 		replaced[name] = true
 	}
@@ -924,6 +929,7 @@ func execWithKey(store *Store, k *Key, p parsed) error {
 	for _, name := range names {
 		env = append(env, name+"="+k.Secret)
 	}
+	env = append(env, keyLabelVar+"="+k.Label)
 	store.Close()
 	return syscall.Exec(path, argv, env)
 }

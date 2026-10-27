@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Meta Keyguard",
   "version": "0.1.0",
-  "description": "Creates and deletes Meta Model API keys on dev.meta.ai for the Meta Keyguard CLI in WSL.",
+  "description": "DISABLED - do not use. Automated use of dev.meta.ai got an account rate-limited (HTTP 429) and blocked.",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxPOQb8HWwtPwvJ30rSg7gzcH+L0JmKkCYQ8my9w8rbz0WD5K4bkn/OBH0yBZAEG3zmyWYy+7YZpkr3hrMKOrKaxMKykRyk505qAOPGEr2tY+KO1qpoczm9h3XqXDXti2MinhKEPR2Ps6yLOhcSoVoCOcPcBA4c/0Xek5wt8ywREpI4KNh3p6r0xwba1P6xiCWJ8Pt81hwc2Y5Wcwziv41fb2Uja+jn+08vYbBTF49mp5lwsripbEDY4aBBmZW6j1WYvguBa9TTIAe8KfDK4ol07akrNMXYH6ij4xvp7AGjqx6PfpLOFGocONygj/cjJDM1OyPZbHNtpwC7vodQ/UKQIDAQAB",
   "minimum_chrome_version": "116",
   "background": { "service_worker": "background.js", "type": "module" },
